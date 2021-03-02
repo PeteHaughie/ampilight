@@ -4,9 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // I guess we're going to open a websocket connection if it's available and start reading from the data
   // let's also work out how we're going to display the data if we have it
   
-  function openWebSocket() {
-    const webSocketURL = "ws://0.0.0.0:8000";
+  const PORT = 30;
+  const PROTOCOL = "ws://";
+  const LOCATION = location.host;
 
+  function openWebSocket() {
+    const webSocketURL = PROTOCOL + LOCATION + ":" + PORT;
+    // console.log(webSocketURL);
     try {
       const webSocket = new WebSocket(webSocketURL);
 
@@ -26,13 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error(exception);
     }
   }
-  // openWebSocket();
+  openWebSocket();
 
   // data things
   
   // DOM things
   const canvas = document.getElementById('canvas');
+  let i = 0;
+  setInterval(() => {
 
-  // a loop?
-    // then iterate through some sort of json data to get the values we're looking for
+  }, (1000 / 10));
 });
