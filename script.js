@@ -4,21 +4,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // I guess we're going to open a websocket connection if it's available and start reading from the data
   // let's also work out how we're going to display the data if we have it
   
-  const PORT = 30;
+  const PORT = 9001;
   const PROTOCOL = "ws://";
-  const LOCATION = location.host;
+  const LOCATION = "localhost";
 
   function openWebSocket() {
-    const webSocketURL = PROTOCOL + LOCATION + ":" + PORT;
+    const webSocketURL = PROTOCOL + LOCATION + ":" + PORT + "/";
     // console.log(webSocketURL);
     try {
       const webSocket = new WebSocket(webSocketURL);
 
       webSocket.onopen = function(openEvent) {
-        console.log("WebSocket is now open", JSON.stringify(openEvent, null, 4));
+        console.log("WebSocket is now open", JSON.stringify(openEvent, ["message", "arguments", "type", "name"]));
       }
       webSocket.onerror = function(errorEvent) {
-        console.error("WebSocket encountered a problem", JSON.stringify(errorEvent, null, 4));
+        console.error("WebSocket encountered a problem", JSON.stringify(errorEvent, ["message", "arguments", "type", "name"]));
       }
       webSocket.onmessage = function(messageEvent) {
         // this is the clever thing

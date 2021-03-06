@@ -1,17 +1,36 @@
-#!/usr/bin/env python
-import asyncio
-import websockets
+from websocket_server import WebsocketServer
 
-async def hello(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
+clients = {}
 
-    greeting = f"Hello {name}!"
+def client_left(client, server):
+    msg = "Client (%s) left" % client['id']
+    print(msg)
+    try:
+        clients.pop(client['id'])
+    except:
+        print("Error in removing client %s" % client['id'])
+    for cl in clients.values():
+        server.send_message(cl, msg)
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
 
-start_server = websockets.serve(hello, "", 30)
+def new_client(client, server):
+    msg = "New client (%s) connected" % client['id']
+    print(msg)
+    for cl in clients.values():
+        server.send_message(cl, msg)
+    clients[client['id']] = client
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+def msg_received(client, server, msg):
+    msg = "Client (%s) : %s" % (client['id'], msg)
+    print(msg)
+    clientid = client['id']
+    for cl in clients:
+        if cl != clientid:
+            cl = clients[cl]
+            server.send_message(cl, msg)
+
+server = WebsocketServer(9001)
+server.set_fn_client_left(client_left)
+server.set_fn_new_client(new_client)
+server.set_fn_message_received(msg_received)
+server.run_forever()

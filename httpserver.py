@@ -1,10 +1,23 @@
 #!/usr/bin/env python
-import http.server
-import socketserver
 
-PORT = 80
-Handler  = http.server.SimpleHTTPRequestHandler
+# Usage: python cors_http_server.py <port>
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print("serving at port", PORT)
-    httpd.serve_forever()
+try:
+    # try to use Python 3
+    from http.server import HTTPServer, SimpleHTTPRequestHandler, test as test_orig
+    import sys
+
+    print("serving on 80")
+    def test(*args):
+        test_orig(*args, port=int(sys.argv[1]) if len(sys.argv) > 1 else 80)
+except ImportError:  # fall back to Python 2
+    from BaseHTTPServer import HTTPServer, test
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+
+class CORSRequestHandler (SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        SimpleHTTPRequestHandler.end_headers(self)
+
+if __name__ == '__main__':
+    test(CORSRequestHandler, HTTPServer)
