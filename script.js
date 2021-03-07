@@ -6,11 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const PORT = 9001;
   const PROTOCOL = "ws://";
-  const LOCATION = "localhost";
+  const LOCATION = "0.0.0.0";
+  let i = 0;
+  // DOM things
+  const canvas = document.getElementById('canvas');
+  const code = document.getElementById('code');
 
   function openWebSocket() {
     const webSocketURL = PROTOCOL + LOCATION + ":" + PORT + "/";
-    // console.log(webSocketURL);
     try {
       const webSocket = new WebSocket(webSocketURL);
 
@@ -21,9 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("WebSocket encountered a problem", JSON.stringify(errorEvent, ["message", "arguments", "type", "name"]));
       }
       webSocket.onmessage = function(messageEvent) {
-        // this is the clever thing
         const wsMsg = messageEvent.data;
-        console.log("WebSocket message", wsMsg);
+        code.textContent = wsMsg;
       }
 
     } catch (exception) {
@@ -32,12 +34,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   openWebSocket();
 
-  // data things
-  
-  // DOM things
-  const canvas = document.getElementById('canvas');
-  let i = 0;
-  setInterval(() => {
-
-  }, (1000 / 10));
 });

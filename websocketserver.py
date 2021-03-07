@@ -1,36 +1,23 @@
 from websocket_server import WebsocketServer
+import time
 
-clients = {}
+f = open('values.json', 'r')
+msg = f.read()
+f.close()
 
-def client_left(client, server):
-    msg = "Client (%s) left" % client['id']
-    print(msg)
-    try:
-        clients.pop(client['id'])
-    except:
-        print("Error in removing client %s" % client['id'])
-    for cl in clients.values():
-        server.send_message(cl, msg)
+def open_file(msg):
+  global f
+  f = open('values.json', 'r')
+  msg = f.read()
+  f.close()
+  return msg
 
-
-def new_client(client, server):
-    msg = "New client (%s) connected" % client['id']
-    print(msg)
-    for cl in clients.values():
-        server.send_message(cl, msg)
-    clients[client['id']] = client
-
-def msg_received(client, server, msg):
-    msg = "Client (%s) : %s" % (client['id'], msg)
-    print(msg)
-    clientid = client['id']
-    for cl in clients:
-        if cl != clientid:
-            cl = clients[cl]
-            server.send_message(cl, msg)
+def new_client(client, message):
+  while True:
+    message = open_file(msg)
+    server.send_message(client, message)
+    time.sleep(1/20)
 
 server = WebsocketServer(9001)
-server.set_fn_client_left(client_left)
 server.set_fn_new_client(new_client)
-server.set_fn_message_received(msg_received)
 server.run_forever()
